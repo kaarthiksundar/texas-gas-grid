@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "texas-gas-grid"
+version = "0.1.0"
+description = "Parser for gas data in texas-gas-grid case"
+authors = ["kaarthiksundar <kaarthik01sundar@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "texas_gas_grid"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+argparse = "^1.4.0"
+logging = "^0.4.9.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

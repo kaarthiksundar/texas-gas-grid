@@ -1,0 +1,9 @@
+data/Texas7k_Gas/Texas7k.AUX 
+data/Texas7k_Gas/Texas7k.EPC 
+data/Texas7k_Gas/Texas7k.m 
+data/Texas7k_Gas/Texas7k.PWB 
+data/Texas7k_Gas/Texas7k.pwd
+data/Texas7k_Gas/Texas7k.RAW 
+
+src/__pycache__/*
+
