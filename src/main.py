@@ -1,21 +1,22 @@
 import argparse
 from logger import CustomFormatter
+from parser import parse
 import logging
 
 
 def setup_argparse(): 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--datafolder', help='folder where data is available', default='./data/')
+    parser.add_argument('--datafolder', help='folder where data is available', default='./data/Texas7k_Gas/')
     parser.add_argument('--outputfolder', help='folder to store output', default='./output/')
-    parser.add_argument('--datafile', help='csv file', default='Texas7k_Gas.json')
+    parser.add_argument('--datafile', help='input json file', default='Texas7k_Gas.json')
     parser.add_argument('--debug', action='store_true', help='debug flag')
     parser.add_argument('--error', action='store_true', help='error flag')
     parser.add_argument('--warn', action='store_true', help='warn flag')
     return parser
 
 if __name__ == '__main__':
-    # create logger with 'texas-gas-grid' application
-    log = logging.getLogger("texas-gas-grid")
+    # create logger with 'gas-data-parser' application
+    log = logging.getLogger('gas-data-parser')
     log.setLevel(logging.INFO)
 
     # create console handler with a higher log level
@@ -32,4 +33,6 @@ if __name__ == '__main__':
         log.setLevel(logging.ERROR)
     if (args.warn == True):
         log.setLevel(logging.WARNING)
-    log.info(f"CLI-args: {args}")
+    log.debug(f"CLI-args: {args}")
+    parse(args, log)
+    
