@@ -2,8 +2,9 @@ import json
 
 from pathlib import Path
 from typing import List, Dict
-from typedefs import Params, Node, Pipe, Compressor
+from typedefs import Params, Node, Pipe, Compressor, SteadyStateData
 from converters import psi, pascal
+from math import isnan
 
 
 def parse(args, log): 
@@ -16,19 +17,24 @@ def parse(args, log):
         data = json.load(input_file)
         
     params = to_params(data.get('gas', {}), log)
-    nodes = to_nodes(data.get('nodes', []), args, log)
+    nodes, slack_node_indices = to_nodes(data.get('nodes', []), args, log)
     branches = data.get('branches', [])
     pipes = to_pipes(filter(lambda x: x['dev_type'] == 'pipe', branches), log)
-    compressors = to_compressors(filter(lambda x: x['dev_type'] == 'compressor', branches), log)
+    compressors = to_compressors(filter(lambda x: x['dev_type'] == 'compressor', branches), args, log)
     log.info(f'parsed {len(nodes)} nodes')
     nodal_injections = [node.qf for node in nodes]
-    log.debug(f'balance = {sum(nodal_injections)}')
-    log.info(f'nodal flow range: ({min(nodal_injections)*0.8039}, {max(nodal_injections)*0.8039})')
     log.info(f'parsed {len(branches)} edge elements')
     log.info(f'parsed {len(pipes)} pipes')
     log.info(f'parsed {len(compressors)} compressors')
-    
-    # log.debug(nodes)
+    log.warning(f'net injection = {sum(nodal_injections)} (+ve means withdrawal)')
+    ss_data = SteadyStateData(params, nodes, pipes, compressors, slack_node_indices)
+    output_folder = args.outputfolder + args.datafile.split('.')[0]
+    Path(output_folder).mkdir(parents=True, exist_ok=True)
+    log.info(f'output folder {output_folder} created')
+    ss_data.to_params_json(output_folder) 
+    ss_data.to_network_json(args, output_folder)
+    ss_data.to_boundary_conditions_json(output_folder)
+    log.info(f'data written to files: params.json, network.json, bc.json')
     
 def to_params(data, log):
     # default pressure unit is in kPa; multiply by 1000 to make it to Pa 
@@ -52,6 +58,7 @@ def to_nodes(data, args, log):
     log.info('for missing nodal pressure limits, defaulting to [500, args.maxpressurepsi] psi')
     num_negative_p_values = 0
     num_slack_nodes = 0
+    slack_node_indices = []
     nodes = []
     for node in data: 
         id_ = node['number']
@@ -89,15 +96,16 @@ def to_nodes(data, args, log):
         )
         if (slack_bool == True):
             log.info(f'slack node {id_} pressure: {psi(p)} psi')
+            slack_node_indices.append(len(nodes))
         nodes.append(n)
     log.info(f'num slack nodes: {num_slack_nodes}')
     log.warn(f'negative solution pressure values found for {num_negative_p_values} nodes')
     log.info('node parsing completed')
-    return nodes 
+    return nodes, slack_node_indices 
     
 def to_pipes(data, log): 
     log.info('pipe parsing started')
-    log.info('default length and diamater unit is m')
+    log.info('default length and diameter unit is m')
     log.info('friction factor is dimensionless (approx 0.01)')
     log.info('default unit of qf (volumetric flow rate) is in m^3/hr; converting to m^3/s')
     log.info('ignored fields: uid')
@@ -124,7 +132,7 @@ def to_pipes(data, log):
     log.info('pipe parsing completed')
     return pipes
     
-def to_compressors(data, log): 
+def to_compressors(data, args, log): 
     log.info('compressor parsing started')
     log.info('default unit of qf (volumetric flow rate) is in m^3/hr; converting to m^3/s')
     compressors = [
@@ -134,7 +142,7 @@ def to_compressors(data, log):
             to_node = compressor['n2'], 
             name = compressor['dev_type'] + '-' + str(i),
             q = compressor['q'] / 3600.0, 
-            c_ratio = compressor['r']
+            c_ratio = compressor['r'] if isnan(args.cratiosetpoint) else args.cratiosetpoint
         )
         for (i, compressor) in enumerate(data)
     ]
