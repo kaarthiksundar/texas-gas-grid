@@ -54,7 +54,7 @@ def to_nodes(data, args, log):
     log.info('node parsing started')
     log.info('default pressure unit is in kPa; converting to Pa')
     log.info('default unit of qf, min, max (volumetric flow rate) is in m^3/hr; converting to m^3/s')
-    log.info('ignored fields: p, sub')
+    log.info('ignored fields: p')
     log.info('for missing nodal pressure limits, defaulting to [500, args.maxpressurepsi] psi')
     num_negative_p_values = 0
     num_slack_nodes = 0
@@ -92,7 +92,8 @@ def to_nodes(data, args, log):
             name = name, 
             qf = qf,
             min_qf = min_qf, 
-            max_qf = max_qf
+            max_qf = max_qf, 
+            substation_id = node['sub']
         )
         if (slack_bool == True):
             log.info(f'slack node {id_} pressure: {psi(p)} psi')

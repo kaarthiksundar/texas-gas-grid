@@ -27,6 +27,7 @@ class Node:
     qf: float 
     min_qf: float 
     max_qf: float
+    substation_id: int
 
 @dataclass 
 class Pipe: 
@@ -91,7 +92,8 @@ class SteadyStateData:
                 'max_pressure': node.max_pressure, 
                 'slack_bool': node.slack_bool,
                 'min_withdrawal': vol_to_mass(node.min_qf), # conversion factor for m^3/s to kg/s
-                'max_withdrawal': vol_to_mass(node.max_qf),
+                'max_withdrawal': vol_to_mass(node.max_qf), 
+                'electric_substation_id': node.substation_id
             }
         for (i, pipe) in enumerate(self.pipes): 
             network_data['pipes'][str(pipe.id_)] = {
