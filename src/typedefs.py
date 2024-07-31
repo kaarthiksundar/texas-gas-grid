@@ -20,12 +20,11 @@ class Node:
     min_pressure: float 
     max_pressure: float 
     slack_bool: bool 
+    slack_pressure: float
     name: str 
     qf: float 
-    p: float 
-    sub: int 
-    qf_min: float 
-    qf_max: float 
+    min_qf: float 
+    max_qf: float
 
 @dataclass 
 class Pipe: 
@@ -36,7 +35,6 @@ class Pipe:
     friction_factor: float 
     diameter: float 
     name: str 
-    uid: int 
     q: float 
     
 @dataclass 
@@ -47,3 +45,12 @@ class Compressor:
     name: str 
     q: float 
     c_ratio: float 
+    
+class SteadyStateData: 
+    params: Params 
+    nodes: List[Node]
+    pipes: List[Pipe]
+    compressors: List[Compressor]
+    
+    def to_json(self):
+        pass

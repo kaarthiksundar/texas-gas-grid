@@ -9,6 +9,7 @@ def setup_argparse():
     parser.add_argument('--datafolder', help='folder where data is available', default='./data/Texas7k_Gas/')
     parser.add_argument('--outputfolder', help='folder to store output', default='./output/')
     parser.add_argument('--datafile', help='input json file', default='Texas7k_Gas.json')
+    parser.add_argument('--maxpressurepsi', help='max pressure limit in psi', default=900.0, type=float)
     parser.add_argument('--debug', action='store_true', help='debug flag')
     parser.add_argument('--error', action='store_true', help='error flag')
     parser.add_argument('--warn', action='store_true', help='warn flag')
