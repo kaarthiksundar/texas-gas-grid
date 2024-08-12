@@ -55,7 +55,7 @@ def to_nodes(data, args, log):
     log.info('default pressure unit is in kPa; converting to Pa')
     log.info('default unit of qf, min, max (volumetric flow rate) is in m^3/hr; converting to m^3/s')
     log.info('ignored fields: p')
-    log.info('for missing nodal pressure limits, defaulting to [500, args.maxpressurepsi] psi')
+    log.info('for missing nodal pressure limits, defaulting to [args.minpressurepsi, args.maxpressurepsi] psi')
     num_negative_p_values = 0
     num_slack_nodes = 0
     slack_node_indices = []
@@ -64,7 +64,7 @@ def to_nodes(data, args, log):
         id_ = node['number']
         x_coord = node['lat']
         y_coord = node['lon']
-        min_pressure = node.get('min_pressure', 3447.378) * 1000.0 
+        min_pressure = node.get('min_pressure', pascal(args.minpressurepsi)) 
         max_pressure = node.get('max_pressure', pascal(args.maxpressurepsi))
         slack_bool = node['slack']
         p = node['p'] * 1000.0
@@ -100,7 +100,8 @@ def to_nodes(data, args, log):
             slack_node_indices.append(len(nodes))
         nodes.append(n)
     log.info(f'num slack nodes: {num_slack_nodes}')
-    log.warn(f'negative solution pressure values found for {num_negative_p_values} nodes')
+    if (num_negative_p_values > 0):
+        log.warn(f'negative solution pressure values found for {num_negative_p_values} nodes')
     log.info('node parsing completed')
     return nodes, slack_node_indices 
     

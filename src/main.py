@@ -10,6 +10,7 @@ def setup_argparse():
     parser.add_argument('--outputfolder', help='folder to store output', default='./output/')
     parser.add_argument('--datafile', help='input json file', default='Texas7k_Gas.json')
     parser.add_argument('--maxpressurepsi', help='max pressure limit in psi', default=900.0, type=float)
+    parser.add_argument('--minpressurepsi', help='max pressure limit in psi', default=300.0, type=float)
     parser.add_argument('--maxcratio', help='max c_ratio for compressors', default=1.5, type=float)
     parser.add_argument('-r', '--cratiosetpoint', 
                         help='c_ratio set point for compressor (this will overwrite value in data)', default=float('nan'), type=float)
