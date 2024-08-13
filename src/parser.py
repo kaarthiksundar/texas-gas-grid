@@ -77,7 +77,7 @@ def to_nodes(data, args, log):
                 p = 5515.805 * 1000.0
         else: 
             p = float('nan')
-        name = node['name'] + '-' + str(id_)
+        name = node['name'].replace(' ', '') + '-' + str(id_)
         qf = node['qf'] / 3600.0 
         min_qf = node['qf_min'] / 3600.0
         max_qf = node['qf_max'] / 3600.0
@@ -118,7 +118,7 @@ def to_pipes(data, log):
         length = pipe['length']
         diameter = pipe['diameter']
         friction_factor = pipe['friction_factor'] 
-        name = pipe['dev_type'] + '-' + str(i)
+        name = pipe['dev_type'].replace(' ', '') + '-' + str(i)
         q = pipe['q'] / 3600.0 
         p = Pipe(
             id_ = i, 
@@ -142,7 +142,7 @@ def to_compressors(data, args, log):
             id_ = i,
             fr_node = compressor['n1'], 
             to_node = compressor['n2'], 
-            name = compressor['dev_type'] + '-' + str(i),
+            name = compressor['dev_type'].replace(' ', '') + '-' + str(i),
             q = compressor['q'] / 3600.0, 
             c_ratio = compressor['r'] if isnan(args.cratiosetpoint) else args.cratiosetpoint
         )
